@@ -12,6 +12,8 @@ import {
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiConflictResponse,
+  ApiCreatedResponse,
   ApiOperation,
   ApiQuery,
   ApiTags,
@@ -31,17 +33,9 @@ import { ChangePasswordDTo } from './dto/change-password.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({
-    summary: 'Register a new user',
-    responses: {
-      201: {
-        description: 'User created successfully',
-      },
-      409: {
-        description: 'User already exists',
-      },
-    },
-  })
+  @ApiOperation({summary: 'Register a new user'})
+  @ApiCreatedResponse({description: 'User registered successfully'})
+  @ApiConflictResponse({description: 'User already exists'})
   @Post('/register')
   register(@Body() dto: RegisterUserDto) {
     return this.usersService.register(dto);

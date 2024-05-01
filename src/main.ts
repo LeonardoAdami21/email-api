@@ -7,8 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import path, { join } from 'path';
 
 async function bootstrap() {
-  const logger = WinstonModule.createLogger(winstonConfig);
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
   app.setBaseViewsDir(join(__dirname + '/public'));
   app.setViewEngine('hbs');
