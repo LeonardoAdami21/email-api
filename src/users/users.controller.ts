@@ -14,6 +14,9 @@ import {
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags,
@@ -33,9 +36,9 @@ import { ChangePasswordDTo } from './dto/change-password.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({summary: 'Register a new user'})
-  @ApiCreatedResponse({description: 'User registered successfully'})
-  @ApiConflictResponse({description: 'User already exists'})
+  @ApiOperation({ summary: 'Register a new user' })
+  @ApiCreatedResponse({ description: 'User registered successfully' })
+  @ApiConflictResponse({ description: 'User already exists' })
   @Post('/register')
   register(@Body() dto: RegisterUserDto) {
     return this.usersService.register(dto);
@@ -43,11 +46,9 @@ export class UsersController {
 
   @ApiOperation({
     summary: 'Login a user',
-    responses: {
-      200: { description: 'User logged in successfully' },
-      401: { description: 'Unauthorized' },
-    },
   })
+  @ApiCreatedResponse({ description: 'User logged in successfully' })
+  @ApiConflictResponse({ description: 'User already exists.' })
   @Post('/login')
   login(@Body() dto: LoginUserDto) {
     return this.usersService.login(dto);
@@ -55,6 +56,11 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Send a Recovery password' })
   @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: 'Was send a email with instructions to reset your password.',
+  })
+  @ApiNotFoundResponse({ description: 'User not found.' })
+  @ApiConflictResponse({ description: 'User already exists.' })
   @Post('/recovery-email')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.USER)
@@ -77,6 +83,8 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Find all users' })
+  @ApiOkResponse({ description: 'Return all users' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error' })
   @Get('/all')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.ADMIN)
@@ -85,6 +93,9 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Get user by id' })
+  @ApiOkResponse({ description: 'Return user by id' })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error' })
   @Role(UserRole.ADMIN)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -94,6 +105,9 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Update user by id' })
+  @ApiOkResponse({ description: 'User updated successfully' })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiConflictResponse({ description: 'User already exists' })
   @Role(UserRole.USER)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -103,6 +117,8 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Send a token to confirm your email' })
+  @ApiOkResponse({ description: 'Email confirmation sent successfully.' })
+  @ApiNotFoundResponse({ description: 'Confirmation token not found' })
   @Role(UserRole.USER)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -117,6 +133,8 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Change Password' })
+  @ApiOkResponse({ description: 'Password changed successfully.' })
+  @ApiNotFoundResponse({ description: 'Token not found' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.USER)
   @ApiBearerAuth()
@@ -133,6 +151,8 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Delete user by id' })
+  @ApiOkResponse({ description: 'User removed successfully' })
+  @ApiNotFoundResponse({ description: 'User not found' })
   @Role(UserRole.ADMIN)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
