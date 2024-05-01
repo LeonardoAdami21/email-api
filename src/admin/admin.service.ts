@@ -44,6 +44,7 @@ export class AdminService {
       from: 'noreply@application.com',
       subject: 'Confirm your account',
       template: 'email-confirmation',
+      html: `<h1>Confirm your account</h1><p>Click <a href="http://localhost:3000/confirm/${confirmationToken}">here</a> to confirm your account</p>`,
       context: {
         token: confirmationToken,
       },

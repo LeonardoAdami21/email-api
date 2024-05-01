@@ -7,10 +7,10 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { winstonConfig } from './config/winston.config';
 import { mailerConfig } from './config/mailer.config';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
-    UsersModule,
     ConfigModule.forRoot({ isGlobal: true }),
     WinstonModule.forRoot(winstonConfig),
     MailerModule.forRoot(mailerConfig),
@@ -19,6 +19,8 @@ import { mailerConfig } from './config/mailer.config';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
+    UsersModule,
+    AdminModule,
   ],
 })
 export class AppModule {}
