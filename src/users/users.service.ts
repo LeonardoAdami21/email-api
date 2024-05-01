@@ -46,7 +46,11 @@ export class UsersService {
       to: email,
       from: 'noreply@application.com',
       subject: 'Confirm your account',
-      html: `<p>Click <a href="${confirmationToken}">here</a> to confirm your account.</p>`,
+      html: `<a href="http://localhost:3000/users/confirm-email/${confirmationToken}">Confirm your email</a>`,
+      template: 'email-confirmation',
+      context: {
+        token: users.confirmationToken
+      }
     });
     if (dto.password !== dto.passwordConfirmation) {
       throw new UnprocessableEntityException(
@@ -148,6 +152,7 @@ export class UsersService {
       to: user.email,
       from: 'noreply@application.com',
       subject: 'Recuperação de senha',
+      html: `<a href="http://localhost:3000/users/reset-password/${recoverToken}">Reset your password</a>`,
       template: 'recover-password',
       context: {
         token: user.recoverToken,
