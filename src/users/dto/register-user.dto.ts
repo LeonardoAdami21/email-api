@@ -26,7 +26,7 @@ export class RegisterUserDto {
   @IsOptional()
   passwordConfirmation: string;
 
-  recoverToken?: null
-  confirmationToken?: string
+  recoverToken?: null;
+  confirmationToken?: string;
   role?: UserRole;
 }
