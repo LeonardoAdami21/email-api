@@ -150,13 +150,7 @@ export class UsersController {
     };
   }
 
-  @ApiOperation({ responses : 
-    {200:
-       {description: 'User removed successfully'}, 
-      404: 
-    {description: 'User not found'
-
-    })
+  @ApiOperation({ summary: 'Remove user by id' })
   @Role(UserRole.ADMIN)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
