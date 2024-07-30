@@ -1,5 +1,5 @@
-import { MailerService } from '@nestjs-modules/mailer';
 import {
+  ConflictException,
   Inject,
   Injectable,
   UnprocessableEntityException,
@@ -20,7 +20,6 @@ export class AdminService {
     private readonly dbClient: PrismaClient,
     private readonly jwtStrategy: JwtStrategy,
     private readonly jwtService: JwtService,
-    private readonly mailService: MailerService,
   ) {}
 
   private readonly adminRepository = this.dbClient.users;
@@ -39,18 +38,8 @@ export class AdminService {
         passwordConfirmation: hashedPassword,
       },
     });
-    await this.mailService.sendMail({
-      to: email,
-      from: 'noreply@application.com',
-      subject: 'Confirm your account',
-      template: 'email-confirmation',
-      html: `<h1>Confirm your account</h1><p>Click <a href="http://localhost:3000/confirm/${confirmationToken}">here</a> to confirm your account</p>`,
-      context: {
-        token: confirmationToken,
-      },
-    });
     if (admin.password !== admin.passwordConfirmation) {
-      throw new UnprocessableEntityException(
+      throw new ConflictException(
         'Password confirmation is incorrect',
       );
     }
@@ -77,10 +66,9 @@ export class AdminService {
       role: admin.role,
     });
     const token = await this.jwtService.sign(payload, {
-      secret: environment.JWT_SECRET,
+      secret: environment.jwtSecret,
       expiresIn: '1d',
     });
     return { access_token: token, id: admin.id };
   }
-
 }
