@@ -64,7 +64,7 @@ export class UsersService {
       secret: environment.jwtSecret,
       expiresIn: '1d',
     });
-    return { access_token: token, id: user.id };
+    return { access_token: token };
   }
 
   async findAll() {
@@ -134,6 +134,7 @@ export class UsersService {
       .randomBytes(32)
       .toString('hex'));
     await this.usersRepository.sendRecoveryPasswordEmail(email, recoverToken);
+
   }
 
   async resetPassword(

@@ -1,30 +1,29 @@
-version: '3.8'
 
 services:
   api:
-    build:
+    container_name: email-api
+    image: email-api:lts
+    build: 
       context: .
       dockerfile: Dockerfile
     env_file:
       - .env
     environment:
-      - APP_PORT:${APP_PORT}
-      - JWT_SECRET:${JWT_SECRET}
-      - DATABASE_URL:${DATABASE_URL}
+      APP_PORT: ${APP_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
     depends_on:
       - db
-    ports:
-      - 7000:7000
-    restart: always
+
   db:
-    image: postgres
-    container_name: postgres
-    env_file:
-      - .env
+    container_name: email-db
+    image: postgres:13
     environment:
-      - POSTGRES_USER:${POSTGRES_USER}
-      - POSTGRES_PASSWORD:${POSTGRES_PASSWORD}
-      - POSTGRES_DB:${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - 5432:5432
-    restart: always
+      - "5432:5432"
