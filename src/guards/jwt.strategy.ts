@@ -7,7 +7,7 @@ import { environment } from '../env/envoriment';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      secretOrKey: environment.JWT_SECRET,
+      secretOrKey: environment.jwtSecret,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
     });

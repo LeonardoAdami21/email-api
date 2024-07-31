@@ -1,4 +1,3 @@
-import { MailerService } from '@nestjs-modules/mailer';
 import {
   ConflictException,
   Inject,
@@ -9,7 +8,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaClient, UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { environment } from '../env/envoriment';
@@ -27,7 +26,6 @@ export class UsersService {
     private readonly usersRepository: UserRepositoryInterface,
     private readonly jwtStrategy: JwtStrategy,
     private readonly jwtService: JwtService,
-    private readonly mailService: MailerService,
   ) {}
 
   async register(dto: RegisterUserDto) {
@@ -42,20 +40,8 @@ export class UsersService {
       confirmationToken: confirmationToken,
       recoverToken: null,
     });
-    await this.mailService.sendMail({
-      to: email,
-      from: 'noreply@application.com',
-      subject: 'Confirm your account',
-      html: `<a href="http://localhost:3000/users/confirm-email/${confirmationToken}">Confirm your email</a>`,
-      template: 'email-confirmation',
-      context: {
-        token: users.confirmationToken
-      }
-    });
     if (dto.password !== dto.passwordConfirmation) {
-      throw new UnprocessableEntityException(
-        'Password confirmation is incorrect',
-      );
+      throw new ConflictException('Password confirmation is incorrect');
     }
     return users;
   }
@@ -75,10 +61,10 @@ export class UsersService {
     }
     const payload = await this.jwtStrategy.validate(user);
     const token = this.jwtService.sign(payload, {
-      secret: environment.JWT_SECRET,
+      secret: environment.jwtSecret,
       expiresIn: '1d',
     });
-    return { access_token: token, id: user.id };
+    return { access_token: token };
   }
 
   async findAll() {
@@ -148,17 +134,7 @@ export class UsersService {
       .randomBytes(32)
       .toString('hex'));
     await this.usersRepository.sendRecoveryPasswordEmail(email, recoverToken);
-    const mail = {
-      to: user.email,
-      from: 'noreply@application.com',
-      subject: 'Recuperação de senha',
-      html: `<a href="http://localhost:3000/users/reset-password/${recoverToken}">Reset your password</a>`,
-      template: 'recover-password',
-      context: {
-        token: user.recoverToken,
-      },
-    };
-    await this.mailService.sendMail(mail);
+
   }
 
   async resetPassword(

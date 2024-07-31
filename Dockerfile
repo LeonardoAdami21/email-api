@@ -1,32 +1,23 @@
-# Use the official Node.js 14 image as the base image
-FROM node:20.11.1
+# Dockerfile
+FROM node:lts
 
-# Set the working directory inside the container
+# Define o diretório de trabalho no contêiner
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
+# Copia o package.json e o package-lock.json
 COPY package*.json ./
 
-# Install dependencies
+# Instala as dependências do projeto
 RUN yarn install
 
-# Copy the rest of the application code to the working directory
+# Copia o restante do código da aplicação
 COPY . .
 
-# Expose the port that the NestJS application will run on
-EXPOSE 3000
+# Compila a aplicação
+RUN yarn build
 
-# Set environment variables for NestJS
-ENV NODE_ENV=${NODE_ENV}
-ENV APP_PORT=${APP_PORT}
-ENV DATABASE_HOST=${DATABASE_HOST}
-ENV DATABASE_PORT=${DATABASE_PORT}
-ENV DATABASE_USERNAME=${DATABASE_USERNAME}
-ENV DATABASE_PASSWORD=${DATABASE_PASSWORD}
-ENV DATABASE_NAME=${DATABASE_NAME}
+# Expõe a porta que a aplicação irá rodar
+EXPOSE ${APP_PORT}
 
-# Build the application
-RUN yarn prisma migrate dev && yarn build
-
-# Start the NestJS application
-CMD ["node", "/dist/main"]
+# Comando para rodar a aplicação
+CMD ["yarn", "start:dev"]

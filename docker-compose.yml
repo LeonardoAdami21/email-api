@@ -1,32 +1,29 @@
-version: '3.8'
 
 services:
-  postgres:
-    image: postgres:alpine
-    ports:
-      - '5432:5432'
-    container_name: 'pgsql'
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    env_file:
-      - .env
-  nestjs:
-    build:
+  api:
+    container_name: email-api
+    image: email-api:lts
+    build: 
       context: .
       dockerfile: Dockerfile
-    ports:
-      - '3000:3000'
-    container_name: 'email-api-nestjs'
-    image: 'email-api-nestjs:20.11.1'
-    restart: always
-    volumes:
-      - .:/app
     env_file:
       - .env
+    environment:
+      APP_PORT: ${APP_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
     depends_on:
-      - postgres
-volumes:
-  pgdata:
+      - db
+
+  db:
+    container_name: email-db
+    image: postgres:13
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"

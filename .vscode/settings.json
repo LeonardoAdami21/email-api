@@ -5,11 +5,5 @@
   "editor.formatOnSave": true, // optional
   "editor.formatOnSaveMode": "file", // required to format on save
   "files.autoSave": "afterDelay", // optional but recommended
-  "vs-code-prettier-eslint.prettierLast": false,
-  "[dockercompose]": {
-    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
-  },
-  "[prisma]": {
-    "editor.defaultFormatter": "Prisma.prisma"
-  } // set as "true" to run 'prettier' last not first
+  "vs-code-prettier-eslint.prettierLast": false
 }
